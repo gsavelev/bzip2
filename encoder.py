@@ -3,7 +3,7 @@ import sys
 
 def encode(infile):
     # TODO encode file here
-    return infile
+    pass
 
 
 def main():

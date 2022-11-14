@@ -1,4 +1,6 @@
 .DS_Store
+test_huffman.py
 
 .idea/*
 data/*
+huffman/__pycache__/*
