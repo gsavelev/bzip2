@@ -13,7 +13,7 @@ def main():
     with open(zipfile_name, 'rb') as zipfile:
         decoded_file = decode(zipfile.read())
 
-    with open(outfile_name, 'wb') as outfile:
+    with open(outfile_name, 'w') as outfile:
         outfile.write(decoded_file)
 
 

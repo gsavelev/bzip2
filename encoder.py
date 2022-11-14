@@ -10,7 +10,7 @@ def main():
     infile_name = sys.argv[1]
     zipfile_name = sys.argv[2]
 
-    with open(infile_name, 'rb') as infile:
+    with open(infile_name, 'r', encoding='utf-8') as infile:
         encoded_file = encode(infile.read())
 
     with open(zipfile_name, 'wb') as zipfile:
