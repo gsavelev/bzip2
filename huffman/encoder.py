@@ -76,7 +76,8 @@ class HuffmanEncoder:
             s_encoded += code_dict[sym]
         return s_encoded
 
-    def encode(self, s: str):
+    def encode(self, s):
+        s = str(s)
         priority_dict = self.counter(s)
         n = len(priority_dict)
 

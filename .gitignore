@@ -3,4 +3,6 @@ test_huffman.py
 
 .idea/*
 data/*
+bwt/__pycache__/*
+mtf/__pycache__/*
 huffman/__pycache__/*
