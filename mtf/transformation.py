@@ -9,7 +9,7 @@ class MTF:
             del s_list[s_idx + 1]  # + 1 here to compensate insert above
         return transformed, s_list
 
-    def undo(self, transformed: list, table: list) -> str:
+    def undo_transform(self, transformed: list, table: list) -> str:
         origin_str = ''
         for i in transformed:
             origin_str += table[i]
@@ -22,5 +22,5 @@ if __name__ == '__main__':
     mtf = MTF()
     before = 'abacaba'
     after, coding_table = mtf.transform(before)
-    after = mtf.undo(after, coding_table)
-    assert before == after
+    undo_after = mtf.undo_transform(after, coding_table)
+    assert before == undo_after

@@ -13,28 +13,27 @@ def encode(infile):
     huff = HuffmanEncoder()
 
     # encoding
-    bwt_str, bwt_idx = bwt.transform(str(infile))
+    bwt_str = bwt.transform(str(infile))
     mtf_str, mtf_table = mtf.transform(bwt_str)
     code, huff_dict = huff.encode(mtf_str)
 
-    meta_data = {
-        'bwt_idx': bwt_idx,
+    data = {
         'mtf_table': mtf_table,
-        'huff_dict': huff_dict,
+        'huff_dict': huff_dict
     }
-    meta_data = json.dumps(meta_data)
 
-    # making byte code: meta_data, leading 0, code
-    byte_code = bytearray(meta_data.encode())
+    byte_code = bytearray(json.dumps(data).encode())
+    bits = []
     len_code = len(code)
     if len_code % 8 != 0:
         # add extra bytes to make length multiple of 8
         n_extra_bytes = math.ceil(len_code / 8) * 8 - len_code
         code = '0' * n_extra_bytes + code
-    for i in range(0, len_code + n_extra_bytes, 8):
-        byte_code.append(int(code[i:i + 8], 2))
+    for i in range(0, len(byte_code), 8):
+        bits.append(int(byte_code[i:i + 8], 2))
+    bits.append(code)
 
-    return byte_code
+    return bits
 
 
 def main():

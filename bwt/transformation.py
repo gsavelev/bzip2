@@ -1,47 +1,70 @@
 class BWT:
-    def transform(self, s):
-        shifts = self.shift(s)
-        origin_idx, last_column = self.lex_sort(shifts, s)
-        return origin_idx, last_column
+    def transform(self, s: str) -> list:
+        last_col = self.shift(s)
+        return last_col
 
-    def shift(self, s):
-        # TODO change storing in big matrix to how many units shifted
-        #  https://www.geeksforgeeks.org/burrows-wheeler-data-transform-algorithm/
-        #  https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform
-        #  I need to use suffix data structure
-        #  and add EOF sym
-        shifts = []
-        letters = [*s]
-        for i in range(len(letters)):
-            rotation = s[-1] + s[:-1]
-            shifts.append(rotation)
-            s = rotation
-        return shifts
+    def create_suffix_array(self, s: str) -> list:
+        suff_num = []
+        suff_arr = []
+        for i in range(len(s)):
+            suff_num.append((s[i:], i))
+        suff_num.sort(key=lambda x: x[0])
+        for s in suff_num:
+            num = s[1]
+            suff_arr.append(num)
+        return suff_arr
 
-    def lex_sort(self, shifts, s):
-        last_column = ''
-        rotations = sorted(shifts)
-        for i in range(len(rotations)):
-            if rotations[i] == s:
-                origin_idx = i
-            last_column += rotations[i][-1]
-        return last_column, origin_idx
+    def shift(self, s: str) -> list:
+        last_col = []
+        # add STX and ETX symbols to the input string
+        stx = '\002'
+        etx = '\003'
+        assert stx not in s and etx not in s
+        s = stx + s + etx
 
-    def undo(self, bwt_str, origin_idx):
-        # TODO do not n^2 way
-        #  https://www.geeksforgeeks.org/inverting-burrows-wheeler-transform/
-        #  https://en.wikipedia.org/wiki/Burrows%E2%80%93Wheeler_transform
+        suff_arr = self.create_suffix_array(s)
+        n = len(suff_arr)
+        for i in range(n):
+            last_char = s[(suff_arr[i] - 1 + n) % n]  # find the lact char of each rotation
+            last_col.append(last_char)
+
+        return last_col
+
+    def mark(self, col: list, n: int) -> list:
+        counter = dict()
+        marked_col = []
+        for i in range(n):
+            sym = col[i]
+            if sym not in counter.keys():
+                counter[sym] = 0
+            counter[sym] += 1
+            marked_col.append((sym, counter[sym]))
+        return marked_col
+
+    def undo_transform(self, bwt_str: list) -> str:
+        origin_str = ''
         n = len(bwt_str)
-        shifts = [""] * n
-        for i in range(n):  # restore shifts
-            shifts = sorted(bwt_str[i] + shifts[i] for i in range(n))  # add one column of shift
-        origin_str = shifts[origin_idx]
-        return origin_str
+        bwt_str_sorted = sorted(bwt_str)  # first column of BWT matrix
+
+        first_col = self.mark(bwt_str_sorted, n)
+        last_col = self.mark(bwt_str, n)
+
+        j = 0
+        while j < n:
+            # https://www.youtube.com/watch?v=DqdjbK68l3s
+            if j == 0:
+                k = 0
+            (sym, i) = last_col[k][0], last_col[k][1]
+            origin_str = sym + origin_str
+            k = first_col.index((sym, i))
+            j += 1
+
+        return origin_str.rstrip('\003').strip('\002')
 
 
 if __name__ == '__main__':
     bwt = BWT()
     before = 'abacaba'
-    after, i = bwt.transform(before)
-    after = bwt.undo(after, i)
-    assert before == after
+    after = bwt.transform(before)
+    undo_after = bwt.undo_transform(after)
+    assert before == undo_after
