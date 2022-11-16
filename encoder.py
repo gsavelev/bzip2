@@ -1,5 +1,4 @@
 import sys
-import math
 import json
 
 from bwt.transformation import BWT
@@ -17,23 +16,18 @@ def encode(infile):
     mtf_str, mtf_table = mtf.transform(bwt_str)
     code, huff_dict = huff.encode(mtf_str)
 
-    data = {
+    meta_data = {
         'mtf_table': mtf_table,
         'huff_dict': huff_dict
     }
 
-    byte_code = bytearray(json.dumps(data).encode())
-    bits = []
-    len_code = len(code)
-    if len_code % 8 != 0:
-        # add extra bytes to make length multiple of 8
-        n_extra_bytes = math.ceil(len_code / 8) * 8 - len_code
-        code = '0' * n_extra_bytes + code
-    for i in range(0, len(byte_code), 8):
-        bits.append(int(byte_code[i:i + 8], 2))
-    bits.append(code)
+    meta_data = json.dumps(meta_data)
+    meta_bytes = bytearray(meta_data.encode())
 
-    return bits
+    for i in range(0, len(code), 8):
+        meta_bytes.append(int(code[i:i + 8], 2))
+
+    return meta_bytes
 
 
 def main():

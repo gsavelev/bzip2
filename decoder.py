@@ -1,3 +1,4 @@
+import json
 import sys
 
 from bwt.transformation import BWT
@@ -5,9 +6,10 @@ from mtf.transformation import MTF
 from huffman.decoder import HuffmanDecoder
 
 
-def decode(zipfile):
-    # TODO get data
-    # data = zipfile
+def decode(data):
+    # FIXME UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8a in position 664: invalid start byte
+    data = json.load(zipfile)
+    # TODO find meta_data and code
     huff_dict = data['huff_dict']
     mtf_table = data['mtf_table']
     code = data['code']
@@ -43,4 +45,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    with open('bibz', 'rb') as zipfile:
+        decoded = decode(zipfile)
+    # main()
