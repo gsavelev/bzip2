@@ -1,33 +1,23 @@
 import sys
-import json
 
 from bwt.transformation import BWT
 from mtf.transformation import MTF
-from huffman.encoder import HuffmanEncoder
+# from huffman.encoder import HuffmanEncoder
 
 
 def encode(infile):
     bwt = BWT()
     mtf = MTF()
-    huff = HuffmanEncoder()
+    # huff = HuffmanEncoder()
 
     # encoding
     bwt_str = bwt.transform(str(infile))
-    mtf_str, mtf_table = mtf.transform(bwt_str)
-    code, huff_dict = huff.encode(mtf_str)
+    mtf_list = mtf.transform(bwt_str)
+    # TODO make huff_dict binary
+    # code, huff_dict = huff.encode(mtf_str)
 
-    meta_data = {
-        'mtf_table': mtf_table,
-        'huff_dict': huff_dict
-    }
-
-    meta_data = json.dumps(meta_data)
-    meta_bytes = bytearray(meta_data.encode())
-
-    for i in range(0, len(code), 8):
-        meta_bytes.append(int(code[i:i + 8], 2))
-
-    return meta_bytes
+    # TODO pass binary to file
+    return bytearray(mtf_list)
 
 
 def main():
