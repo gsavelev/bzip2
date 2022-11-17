@@ -47,6 +47,10 @@ class HuffmanEncoder:
     def __init__(self):
         self.heap = MinHeap()
 
+    def make_binary(self, encoder: dict) -> str:
+        # TODO encode dict to binary
+        pass
+
     def counter(self, s: str) -> dict:
         priority_dict = dict()
         for sym in s:
@@ -103,4 +107,4 @@ class HuffmanEncoder:
 
         code_str = self.build_str(s, code_dict)
 
-        return code_str, code_dict
+        return code_str, self.make_binary(code_dict)

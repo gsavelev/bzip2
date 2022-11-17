@@ -2,22 +2,23 @@ import sys
 
 from bwt.transformation import BWT
 from mtf.transformation import MTF
-# from huffman.encoder import HuffmanEncoder
+from huffman.encoder import HuffmanEncoder
 
 
 def encode(infile):
     bwt = BWT()
     mtf = MTF()
-    # huff = HuffmanEncoder()
+    huff = HuffmanEncoder()
 
     # encoding
     bwt_str = bwt.transform(str(infile))
     mtf_list = mtf.transform(bwt_str)
-    # TODO make huff_dict binary
-    # code, huff_dict = huff.encode(mtf_str)
+    code, bin_huff_tree = huff.encode(mtf_list)
 
-    # TODO pass binary to file
-    return bytearray(mtf_list)
+    # TODO pass code and huff_dict binary to file and return bytearray()
+    binary = ...
+
+    return bytearray(binary)
 
 
 def main():

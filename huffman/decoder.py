@@ -1,6 +1,10 @@
 class HuffmanDecoder:
     def __init__(self, code_dict: dict):
-        self.code_dict = code_dict
+        self.code_dict = self.read_binary(code_dict)
+
+    def read_binary(self, decoder: str) -> dict:
+        # TODO decode dict from binary
+        pass
 
     def decode(self, code_str) -> str:
         decoded_str = str()
