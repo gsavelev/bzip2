@@ -1,3 +1,4 @@
+import math
 import sys
 
 from bwt.transformation import BWT
@@ -13,12 +14,24 @@ def encode(infile):
     # encoding
     bwt_str = bwt.transform(str(infile))
     mtf_list = mtf.transform(bwt_str)
-    code, bin_huff_tree = huff.encode(mtf_list)
+    tree, alphabet, code = huff.encode(mtf_list)
 
-    # TODO pass code and huff_dict binary to file and return bytearray()
-    binary = ...
+    byte_code = bytearray(alphabet.encode())
+    byte_code.extend(make_bytes(tree))
+    byte_code.extend(make_bytes(code))
 
-    return bytearray(binary)
+    return byte_code
+
+
+def make_bytes(bin_data):
+    l = len(bin_data)
+    if l % 8 != 0:
+        n_extra = math.ceil(l / 8) * 8 - l
+        bin_data = '0' * n_extra + bin_data
+    byte_data = bytearray()
+    for i in range(0, len(bin_data), 8):
+        byte_data.append(int(bin_data[i:i + 8], 2))
+    return byte_data
 
 
 def main():

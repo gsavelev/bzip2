@@ -47,9 +47,23 @@ class HuffmanEncoder:
     def __init__(self):
         self.heap = MinHeap()
 
-    def make_binary(self, encoder: dict) -> str:
-        # TODO encode dict to binary
-        pass
+    def bfs(self, root: Node) -> tuple:
+        if not root:
+            return
+
+        flat_tree, queue, symbols = [], [root], []
+
+        while len(queue) > 0:
+            curr_node = queue.pop()
+            if isinstance(curr_node, str):
+                flat_tree.append('1')
+                symbols.append(curr_node)
+            else:
+                flat_tree.append('0')
+                queue.append(curr_node.left_child)
+                queue.append(curr_node.right_child)
+
+        return (flat_tree, queue)
 
     def counter(self, s: str) -> dict:
         priority_dict = dict()
@@ -80,7 +94,7 @@ class HuffmanEncoder:
             s_encoded += code_dict[sym]
         return s_encoded
 
-    def encode(self, s):
+    def encode(self, s) -> tuple:
         s = str(s)
         priority_dict = self.counter(s)
         n = len(priority_dict)
@@ -106,5 +120,11 @@ class HuffmanEncoder:
             code_dict = self.traverse(tree, prefix=list(), code_dict=dict())
 
         code_str = self.build_str(s, code_dict)
+        z_tree, alphabet = self.bfs(tree)
 
-        return code_str, self.make_binary(code_dict)
+        return (''.join(z_tree), ''.join(alphabet), code_str)
+
+
+if __name__ == '__main__':
+    h = HuffmanEncoder()
+    h.encode('AAAAAABCCCCCCDDEEEEE')
