@@ -1,4 +1,4 @@
-import json
+import re
 import sys
 
 from bwt.transformation import BWT
@@ -6,9 +6,19 @@ from mtf.transformation import MTF
 from huffman.decoder import HuffmanDecoder
 
 
-def decode(data):
-    # TODO decode binary from data
-    ...
+def decode(data: bytearray) -> bytearray:
+    encoded_split = re.split('\x00', data.decode())
+
+    huff = HuffmanDecoder(encoded_split)
+    mtf = MTF()
+    bwt = BWT()
+
+    # TODO do reverse transformations
+    huff_str = huff.decode()
+    # mtf_list = mtf.transform(bwt_str)
+    # bwt_str = bwt.transform(str(infile))
+
+    print(1)
 
 
 def main():
@@ -31,4 +41,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    from encoder import encode
+    s = 'AAAAAABCCCCCCDDEEEEE'
+    code = encode(s)
+    decode(code)

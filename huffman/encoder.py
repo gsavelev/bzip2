@@ -63,7 +63,7 @@ class HuffmanEncoder:
                 queue.append(curr_node.left_child)
                 queue.append(curr_node.right_child)
 
-        return (flat_tree, queue)
+        return (flat_tree, symbols)
 
     def counter(self, s: str) -> dict:
         priority_dict = dict()
@@ -127,4 +127,4 @@ class HuffmanEncoder:
 
 if __name__ == '__main__':
     h = HuffmanEncoder()
-    h.encode('AAAAAABCCCCCCDDEEEEE')
+    h.encode('abacaba')
