@@ -1,3 +1,13 @@
+class Node:
+    def __init__(self, root, left_child, right_child):
+        self.root = root
+        self.left_child = left_child
+        self.right_child = right_child
+
+    def is_leaf(self):
+        return self.left_child is None
+
+
 class HuffmanDecoder:
     def __init__(self, encoded_split: list):
         self.flat_tree = encoded_split[0]
@@ -21,4 +31,5 @@ class HuffmanDecoder:
 
     def unfold_tree(self, index=0) -> dict:
         # TODO pass flatten tree and restore code_dict
+        # https://stackoverflow.com/questions/759707/efficient-way-of-storing-huffman-tree
         pass
