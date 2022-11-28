@@ -15,23 +15,31 @@ def encode(infile):
     mtf_list = mtf.transform(bwt_str)
     tree, alphabet, code = huff.encode(mtf_list)
 
+    # TODO mb I do extend in wrong way?
     byte_code = make_bytes(tree)
-    byte_code.extend('\x00'.encode())  # add separator '\x00'
-    byte_code.extend(bytes(alphabet))
+    byte_code.extend('\x00'.encode())  # add NULL separator
+    byte_code.extend(make_bytes(alphabet))
     byte_code.extend('\x00'.encode())
     byte_code.extend(make_bytes(code))
 
     return byte_code
 
 
-def make_bytes(bin_data):
-    l = len(bin_data)
+def make_bytes(data):
+    # TODO make bytes in a right way
+    # https://docs.python.org/3/library/stdtypes.html
+    if isinstance(data, str):
+        pass
+    elif isinstance(data, list):
+        pass
+
+    l = len(data)
     if l % 8 != 0:
         n_extra = math.ceil(l / 8) * 8 - l
-        bin_data = '0' * n_extra + bin_data
+        data = '0' * n_extra + data
     byte_data = bytearray()
-    for i in range(0, len(bin_data), 8):
-        byte_data.append(int(bin_data[i:i + 8], 2))
+    for i in range(0, len(data), 8):
+        byte_data.extend(int(data[i:i + 8], 2))
     return byte_data
 
 
