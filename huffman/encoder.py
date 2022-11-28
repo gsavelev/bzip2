@@ -55,13 +55,13 @@ class HuffmanEncoder:
 
         while len(queue) > 0:
             curr_node = queue.pop()
-            if isinstance(curr_node, str):
-                flat_tree.append('1')
-                symbols.append(curr_node)
-            else:
+            if isinstance(curr_node, Node):
                 flat_tree.append('0')
                 queue.append(curr_node.left_child)
                 queue.append(curr_node.right_child)
+            else:
+                flat_tree.append('1')
+                symbols.append(curr_node)
 
         return (flat_tree, symbols)
 
@@ -74,7 +74,7 @@ class HuffmanEncoder:
         return priority_dict
 
     def traverse(self, root, prefix, code_dict) -> dict:
-        if isinstance(root, str):
+        if isinstance(root, int):
             code_dict[root] = ''.join(prefix)
             return code_dict
 
@@ -94,9 +94,8 @@ class HuffmanEncoder:
             s_encoded += code_dict[sym]
         return s_encoded
 
-    def encode(self, s) -> tuple:
-        s = str(s)
-        priority_dict = self.counter(s)
+    def encode(self, mtf: list) -> tuple:
+        priority_dict = self.counter(mtf)
         n = len(priority_dict)
 
         # fill min heap with sym frequencies
@@ -119,10 +118,10 @@ class HuffmanEncoder:
         else:
             code_dict = self.traverse(tree, prefix=list(), code_dict=dict())
 
-        code_str = self.build_str(s, code_dict)
+        code_str = self.build_str(mtf, code_dict)
         z_tree, alphabet = self.bfs(tree)
 
-        return (''.join(z_tree), ''.join(alphabet), code_str)
+        return (''.join(z_tree), alphabet, code_str)
 
 
 if __name__ == '__main__':
