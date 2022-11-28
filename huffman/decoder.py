@@ -7,19 +7,20 @@ class Node:
 
 class HuffmanDecoder:
     def __init__(self, encoded_split: list):
-        self.flat_tree = encoded_split[0]
-        self.alphabet = encoded_split[1]
+        self.flat_tree = [c for c in encoded_split[0]]
+        self.alphabet = [c for c in encoded_split[1]]
         self.code = encoded_split[2]
-        self.make_tree_alphabet()
 
     def make_tree_alphabet(self):
         c = 0
         for i in range(len(self.flat_tree)):
-            if self.flat_tree[i] == 1:
+            if self.flat_tree[i] == '1':
                 self.flat_tree[i] = self.alphabet[c]
                 c += 1
 
     def decode(self) -> str:
+        self.make_tree_alphabet()
+
         decoded_str = str()
         curr_code = str()
         tree = self.build_tree(0)
@@ -29,8 +30,8 @@ class HuffmanDecoder:
         else:
             code_dict = self.traverse(tree, prefix=list(), code_dict=dict())
 
-        for i in range(len(curr_code)):
-            curr_code += curr_code[i]
+        for i in range(len(self.code)):
+            curr_code += self.code[i]
             for key, val in code_dict.items():
                 if curr_code == val:
                     decoded_str += key
@@ -46,25 +47,26 @@ class HuffmanDecoder:
                         right_child=self.build_tree((i + 1) * 2))
 
     def traverse(self, root, prefix, code_dict) -> dict:
-        # TODO restore code dict
-        if isinstance(root, str):
-            code_dict[root] = ''.join(prefix)
+        if root.left_child is None and root.right_child is None:
+            code_dict[root.root] = ''.join(prefix)
             return code_dict
+        else:
+            prefix.append('0')
+            code_dict = self.traverse(root.left_child, prefix, code_dict)
+            prefix.pop()
 
-        prefix.append('0')
-        code_dict = self.traverse(root.left_child, prefix, code_dict)
-        prefix.pop()
-
-        prefix.append('1')
-        code_dict = self.traverse(root.right_child, prefix, code_dict)
-        prefix.pop()
+            prefix.append('1')
+            code_dict = self.traverse(root.right_child, prefix, code_dict)
+            prefix.pop()
 
         return code_dict
 
 
 if __name__ == '__main__':
-    flat_tree = [0, 0, 0, 0, 1, 1, 1, 1, 1]
-    alphabet = ['E', 'C', 'A', 'B', 'D']
-    code = None
-    h = HuffmanDecoder([flat_tree, alphabet, code])
-    h.decode()
+    origin = 'BADECA'
+    tree = '000011111'
+    alphabet = 'ECABD'
+    code = '00011001011011'
+    h = HuffmanDecoder([tree, alphabet, code])
+    decoded = h.decode()
+    assert origin == decoded

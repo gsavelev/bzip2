@@ -11,16 +11,16 @@ def encode(infile):
     mtf = MTF()
     huff = HuffmanEncoder()
 
-    # TODO test encoding (saw errors on tests)
-    # bwt_str = bwt.transform(str(infile))
-    # mtf_list = mtf.transform(bwt_str)
-    tree, alphabet, code = huff.encode(infile)
+    # FIXME test encoding (saw errors on tests)
+    bwt_str = bwt.transform(str(infile))
+    mtf_list = mtf.transform(bwt_str)
+    tree, alphabet, code = huff.encode(mtf_list)
 
     # FIXME I write each symbol (i.e. binary) as 1 byte
     #  use make_bytes()
-    byte_code = bytearray(alphabet.encode())
+    byte_code = bytearray(tree.encode())
     byte_code.extend('\x00'.encode())  # add separator '\x00'
-    byte_code.extend(tree.encode())
+    byte_code.extend(alphabet.encode())
     byte_code.extend('\x00'.encode())
     byte_code.extend(code.encode())
 
@@ -58,4 +58,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    infile_name = 'tmp/test'
+    with open(infile_name, 'rb') as infile:
+        encoded = encode(infile_name.read())
+        print(1)
