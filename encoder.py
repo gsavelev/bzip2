@@ -15,32 +15,44 @@ def encode(infile):
     mtf_list = mtf.transform(bwt_str)
     tree, alphabet, code = huff.encode(mtf_list)
 
-    # TODO mb I do extend in wrong way?
-    byte_code = make_bytes(tree)
-    byte_code.extend('\x00'.encode())  # add NULL separator
-    byte_code.extend(make_bytes(alphabet))
-    byte_code.extend('\x00'.encode())
-    byte_code.extend(make_bytes(code))
+    byte_tree = bitstring_to_bytes(tree)
+    byte_alphabet = integers_to_bytes(alphabet)
+    byte_code = bitstring_to_bytes(code)
 
-    return byte_code
+    soh = chr(1)
+    stx = chr(2)
+
+    header = soh.encode() + \
+             len(byte_tree).to_bytes(2, byteorder='big') + \
+             len(byte_alphabet).to_bytes(2, byteorder='big') + \
+             len(byte_code).to_bytes(2, byteorder='big') + \
+             stx.encode()
+
+    byte_str = bytearray()
+    byte_str.extend(header)
+    byte_str.extend(byte_tree)
+    byte_str.extend(byte_alphabet)
+    byte_str.extend(byte_code)
+
+    return byte_str
 
 
-def make_bytes(data):
-    # TODO make bytes in a right way
-    # https://docs.python.org/3/library/stdtypes.html
-    if isinstance(data, str):
-        pass
-    elif isinstance(data, list):
-        pass
-
+def bitstring_to_bytes(data: str) -> bytearray:
     l = len(data)
     if l % 8 != 0:
         n_extra = math.ceil(l / 8) * 8 - l
-        data = '0' * n_extra + data
-    byte_data = bytearray()
-    for i in range(0, len(data), 8):
-        byte_data.extend(int(data[i:i + 8], 2))
-    return byte_data
+        data += '0' * n_extra
+    byte_code = bytearray()
+    for i in range(0, l + n_extra, 8):
+        byte_code.append(int(data[i:i + 8], 2))
+    return byte_code
+
+
+def integers_to_bytes(data: list) -> bytearray:
+    # TODO I can reduce memory usage if handle int >= 256
+    #  to handle it use array of bytes like in Cython
+    #  https://github.com/python/cpython/blob/main/Doc/library/stdtypes.rst
+    return bytes(data)
 
 
 def main():

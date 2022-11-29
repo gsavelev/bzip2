@@ -7,18 +7,21 @@ from huffman.decoder import HuffmanDecoder
 
 
 def decode(data: bytearray) -> bytearray:
-    # TODO handle bytearray
-    encoded_split = re.split('\x00', data.decode())
-    # TODO bytearray to strings (tree, code) and list (alphabet)
+    # TODO handle header then
+    #  decode bytearray to strings (tree, code) and list (alphabet)
+    #  https://stackoverflow.com/questions/7396849/convert-binary-to-ascii-and-vice-versa
+    data = ...
 
     bwt = BWT()
     mtf = MTF()
-    huff = HuffmanDecoder(encoded_split)
+    huff = HuffmanDecoder(data)
 
-    # TODO do reverse transformations
+    # TODO reverse transformations
     huff_str = huff.decode()
     mtf_list = mtf.undo_transform(huff_str)
-    bwt_str = bwt.undo_transform(mtf_list)
+    decoded_data = bwt.undo_transform(mtf_list)
+
+    return decoded_data
 
 
 def main():
