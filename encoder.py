@@ -1,5 +1,6 @@
 import math
 import sys
+import struct
 
 from bwt.transformation import BWT
 from mtf.transformation import MTF
@@ -22,11 +23,12 @@ def encode(infile):
     soh = chr(1)
     stx = chr(2)
 
-    header = soh.encode() + \
-             len(byte_tree).to_bytes(2, byteorder='big') + \
-             len(byte_alphabet).to_bytes(2, byteorder='big') + \
-             len(byte_code).to_bytes(2, byteorder='big') + \
-             stx.encode()
+    header = bytearray()
+    header.extend(soh.encode())
+    header.extend(struct.pack('i', len(byte_tree)))
+    header.extend(struct.pack('i', len(byte_alphabet)))
+    header.extend(struct.pack('i', len(byte_code)))
+    header.extend(stx.encode())
 
     byte_str = bytearray()
     byte_str.extend(header)
@@ -49,10 +51,10 @@ def bitstring_to_bytes(data: str) -> bytearray:
 
 
 def integers_to_bytes(data: list) -> bytearray:
-    # TODO I can reduce memory usage if handle int >= 256
-    #  to handle it use array of bytes like in Cython
-    #  https://github.com/python/cpython/blob/main/Doc/library/stdtypes.rst
-    return bytes(data)
+    byte_data = bytearray()
+    for i in range(len(data)):
+        byte_data.extend(struct.pack('i', data[i]))
+    return byte_data
 
 
 def main():

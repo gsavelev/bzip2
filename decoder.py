@@ -1,4 +1,5 @@
 import re
+import struct
 import sys
 
 from bwt.transformation import BWT
@@ -6,9 +7,13 @@ from mtf.transformation import MTF
 from huffman.decoder import HuffmanDecoder
 
 
-def decode(data: bytearray) -> bytearray:
-    # TODO handle header then
-    #  decode bytearray to strings (tree, code) and list (alphabet)
+def decode(in_data: bytearray) -> bytearray:
+    # TODO slice header
+    #  then parse it
+    header = re.split(r'\x01*\x02', struct.unpack('i', in_data))
+    l_tree, l_alphabet, l_code = ...
+
+    # TODO decode bytearray to strings (tree, code) and list (alphabet)
     #  https://stackoverflow.com/questions/7396849/convert-binary-to-ascii-and-vice-versa
     data = ...
 
