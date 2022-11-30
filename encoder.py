@@ -30,13 +30,13 @@ def encode(infile):
     header.extend(struct.pack('i', len(byte_code)))
     header.extend(stx.encode())
 
-    byte_str = bytearray()
-    byte_str.extend(header)
-    byte_str.extend(byte_tree)
-    byte_str.extend(byte_alphabet)
-    byte_str.extend(byte_code)
+    buffer = bytearray()
+    buffer.extend(header)
+    buffer.extend(byte_tree)
+    buffer.extend(byte_alphabet)
+    buffer.extend(byte_code)
 
-    return byte_str
+    return buffer
 
 
 def bitstring_to_bytes(data: str) -> bytearray:

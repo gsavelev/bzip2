@@ -7,19 +7,28 @@ from mtf.transformation import MTF
 from huffman.decoder import HuffmanDecoder
 
 
-def decode(in_data: bytearray) -> bytearray:
-    # TODO slice header
-    #  then parse it
-    header = re.split(r'\x01*\x02', struct.unpack('i', in_data))
-    l_tree, l_alphabet, l_code = ...
+def decode(buffer: bytearray) -> bytearray:
+    header = re.search(b'\x01(.+?)\x02', buffer).group(1)
+    lens = [l for l in struct.iter_unpack('i', header)]
+    l_tree, l_alphabet, l_code = lens[0][0], lens[1][0], lens[2][0]
 
-    # TODO decode bytearray to strings (tree, code) and list (alphabet)
-    #  https://stackoverflow.com/questions/7396849/convert-binary-to-ascii-and-vice-versa
-    data = ...
+    payload = buffer.split(b'\x01' + header + b'\x02')[1]
+    tree_end = l_tree
+    alphabet_end = l_tree + l_alphabet
+    code_end = l_tree + l_alphabet + l_code
+    byte_tree, byte_alphabet, byte_code = payload[:tree_end], \
+                                          payload[tree_end:alphabet_end], \
+                                          payload[alphabet_end:code_end]
+
+    # TODO and decode bytearray to strings (tree, code) and to list (alphabet)
+    tree = ...
+    alphabet = ...
+    code = ...
+    print(1)
 
     bwt = BWT()
     mtf = MTF()
-    huff = HuffmanDecoder(data)
+    huff = HuffmanDecoder([tree, alphabet, code])
 
     # TODO reverse transformations
     huff_str = huff.decode()
