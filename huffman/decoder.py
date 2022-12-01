@@ -15,32 +15,29 @@ class HuffmanDecoder:
         c = 0
         for i in range(len(self.flat_tree)):
             if self.flat_tree[i] == '1':
-                self.flat_tree[i] = self.alphabet[c]
+                self.flat_tree[i] = str(self.alphabet[c])
                 c += 1
 
     def decode(self) -> str:
-        self.make_tree_alphabet()
+        self.make_tree_alphabet()  # in this task alphabet is list of ints
 
         decoded = list()
         curr_code = str()
         tree = self.build_tree(0)
-
-        if isinstance(tree, str):
-            code_dict = {tree: '0'}
-        else:
-            code_dict = self.traverse(tree, prefix=list(), code_dict=dict())
+        code_dict = self.traverse(tree, prefix=list(), code_dict=dict())
 
         for i in range(len(self.code)):
             curr_code += self.code[i]
             for key, val in code_dict.items():
                 if curr_code == val:
-                    decoded.append(key)
+                    decoded.append(int(key))
                     curr_code = ''
                     continue
 
         return decoded
 
     def build_tree(self, i):
+        # FIXME build tree not in right way
         if i < len(self.flat_tree):
             return Node(root=self.flat_tree[i],
                         left_child=self.build_tree((i + 1) * 2 - 1),

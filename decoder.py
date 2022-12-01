@@ -28,11 +28,9 @@ def decode(buffer: bytearray) -> bytearray:
     mtf = MTF()
     huff = HuffmanDecoder([tree, alphabet, code])
 
-    # FIXME Huffman Decoder don't work with nums
     mtf_list = huff.decode()
     bwt_str = mtf.undo_transform(mtf_list)
     decoded_data = bwt.undo_transform(bwt_str)
-    print(1)
 
     return decoded_data
 
