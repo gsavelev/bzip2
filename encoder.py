@@ -16,45 +16,30 @@ def encode(infile):
     mtf_list = mtf.transform(bwt_str)
     tree, alphabet, code = huff.encode(mtf_list)
 
-    byte_tree = bitstring_to_bytes(tree)
-    byte_alphabet = integers_to_bytes(alphabet)
-    byte_code = bitstring_to_bytes(code)
+    b_tree = bitstring_to_bytes(tree)
+    b_alphabet = struct.pack('i' * len(alphabet), *alphabet)
+    b_code = bitstring_to_bytes(code)
 
     soh = chr(1)
     stx = chr(2)
 
     header = bytearray()
     header.extend(soh.encode())
-    header.extend(struct.pack('i', len(byte_tree)))
-    header.extend(struct.pack('i', len(byte_alphabet)))
-    header.extend(struct.pack('i', len(byte_code)))
+    header.extend(struct.pack('i' * 3,
+                              len(b_tree), len(b_alphabet), len(b_code)))
     header.extend(stx.encode())
 
     buffer = bytearray()
     buffer.extend(header)
-    buffer.extend(byte_tree)
-    buffer.extend(byte_alphabet)
-    buffer.extend(byte_code)
+    buffer.extend(b_tree)
+    buffer.extend(b_alphabet)
+    buffer.extend(b_code)
 
     return buffer
 
 
-def bitstring_to_bytes(data: str) -> bytearray:
-    l = len(data)
-    if l % 8 != 0:
-        n_extra = math.ceil(l / 8) * 8 - l
-        data += '0' * n_extra
-    byte_code = bytearray()
-    for i in range(0, l + n_extra, 8):
-        byte_code.append(int(data[i:i + 8], 2))
-    return byte_code
-
-
-def integers_to_bytes(data: list) -> bytearray:
-    byte_data = bytearray()
-    for i in range(len(data)):
-        byte_data.extend(struct.pack('i', data[i]))
-    return byte_data
+def bitstring_to_bytes(s: str) -> bytearray:
+    return int(s, 2).to_bytes(((len(s) + 7) // 8), byteorder=sys.byteorder)
 
 
 def main():

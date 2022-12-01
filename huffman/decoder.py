@@ -21,7 +21,7 @@ class HuffmanDecoder:
     def decode(self) -> str:
         self.make_tree_alphabet()
 
-        decoded_str = str()
+        decoded = list()
         curr_code = str()
         tree = self.build_tree(0)
 
@@ -34,11 +34,11 @@ class HuffmanDecoder:
             curr_code += self.code[i]
             for key, val in code_dict.items():
                 if curr_code == val:
-                    decoded_str += key
+                    decoded.append(key)
                     curr_code = ''
                     continue
 
-        return decoded_str
+        return decoded
 
     def build_tree(self, i):
         if i < len(self.flat_tree):
@@ -60,13 +60,3 @@ class HuffmanDecoder:
             prefix.pop()
 
         return code_dict
-
-
-if __name__ == '__main__':
-    origin = 'BADECA'
-    tree = '000011111'
-    alphabet = 'ECABD'
-    code = '00011001011011'
-    h = HuffmanDecoder([tree, alphabet, code])
-    decoded = h.decode()
-    assert origin == decoded

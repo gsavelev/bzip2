@@ -16,24 +16,23 @@ def decode(buffer: bytearray) -> bytearray:
     tree_end = l_tree
     alphabet_end = l_tree + l_alphabet
     code_end = l_tree + l_alphabet + l_code
-    byte_tree, byte_alphabet, byte_code = payload[:tree_end], \
-                                          payload[tree_end:alphabet_end], \
-                                          payload[alphabet_end:code_end]
+    b_tree, b_alphabet, b_code = payload[:tree_end],\
+                                 payload[tree_end:alphabet_end], \
+                                 payload[alphabet_end:code_end]
 
-    # TODO and decode bytearray to strings (tree, code) and to list (alphabet)
-    tree = ...
-    alphabet = ...
-    code = ...
-    print(1)
+    tree = '0' + str(bin(int.from_bytes(b_tree, byteorder=sys.byteorder)))[2:]
+    alphabet = [v[0] for v in struct.iter_unpack('i', b_alphabet)]
+    code = '0' + str(bin(int.from_bytes(b_code, byteorder=sys.byteorder)))[2:]
 
     bwt = BWT()
     mtf = MTF()
     huff = HuffmanDecoder([tree, alphabet, code])
 
-    # TODO reverse transformations
-    huff_str = huff.decode()
-    mtf_list = mtf.undo_transform(huff_str)
-    decoded_data = bwt.undo_transform(mtf_list)
+    # FIXME Huffman Decoder don't work with nums
+    mtf_list = huff.decode()
+    bwt_str = mtf.undo_transform(mtf_list)
+    decoded_data = bwt.undo_transform(bwt_str)
+    print(1)
 
     return decoded_data
 

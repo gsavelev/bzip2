@@ -122,8 +122,3 @@ class HuffmanEncoder:
         z_tree, alphabet = self.bfs(tree)
 
         return (''.join(z_tree), alphabet, code_str)
-
-
-if __name__ == '__main__':
-    h = HuffmanEncoder()
-    h.encode('abacaba')
