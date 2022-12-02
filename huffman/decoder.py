@@ -10,6 +10,7 @@ class HuffmanDecoder:
         self.flat_tree = [c for c in encoded_split[0]]
         self.alphabet = [c for c in encoded_split[1]]
         self.code = encoded_split[2]
+        self.make_tree_alphabet()
 
     def make_tree_alphabet(self):
         c = 0
@@ -19,8 +20,6 @@ class HuffmanDecoder:
                 c += 1
 
     def decode(self) -> str:
-        self.make_tree_alphabet()  # in this task alphabet is list of ints
-
         decoded = list()
         curr_code = str()
         tree = self.build_tree(0)
@@ -37,7 +36,7 @@ class HuffmanDecoder:
         return decoded
 
     def build_tree(self, i):
-        # FIXME build tree not in right way
+        # FIXME build tree in wrong way
         if i < len(self.flat_tree):
             return Node(root=self.flat_tree[i],
                         left_child=self.build_tree((i + 1) * 2 - 1),
