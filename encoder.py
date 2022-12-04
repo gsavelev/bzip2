@@ -1,3 +1,4 @@
+import math
 import sys
 import struct
 
@@ -61,6 +62,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    with open('data/bib', 'rb') as infile:
-        encode(infile.read())
+    main()
