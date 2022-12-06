@@ -1,4 +1,3 @@
-import math
 import sys
 import struct
 
@@ -12,11 +11,12 @@ def encode(infile):
     mtf = MTF()
     huff = HuffmanEncoder()
 
-    bwt_str = bwt.transform(str(infile))
-    mtf_list = mtf.transform(bwt_str)
+    bwt_list = bwt.transform(infile.decode('utf-8'))
+    mtf_list = mtf.transform(bwt_list)
     tree, alphabet, code = huff.encode(mtf_list)
 
     b_tree = bitstring_to_bytes(tree)
+    # TODO optimize extra space that I use while byting integers
     b_alphabet = struct.pack('i' * len(alphabet), *alphabet)
     b_code = bitstring_to_bytes(code)
 
@@ -25,8 +25,8 @@ def encode(infile):
 
     header = bytearray()
     header.extend(soh.encode())
-    header.extend(struct.pack('i' * 3,
-                              len(b_tree), len(b_alphabet), len(b_code)))
+    header.extend(struct.pack('i' * 5, len(tree), len(b_tree), len(b_alphabet),
+                              len(code), len(b_code)))
     header.extend(stx.encode())
 
     buffer = bytearray()

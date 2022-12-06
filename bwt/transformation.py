@@ -41,13 +41,13 @@ class BWT:
             marked_col.append((sym, counter[sym]))
         return marked_col
 
-    def undo_transform(self, bwt_str: list) -> str:
+    def undo_transform(self, bwt_list: list) -> str:
         origin_str = ''
-        n = len(bwt_str)
-        bwt_str_sorted = sorted(bwt_str)  # first column of BWT matrix
+        n = len(bwt_list)
+        bwt_str_sorted = sorted(bwt_list)  # first column of BWT matrix
 
         first_col = self.mark(bwt_str_sorted, n)
-        last_col = self.mark(bwt_str, n)
+        last_col = self.mark(bwt_list, n)
 
         j = 0
         while j < n:
@@ -60,11 +60,3 @@ class BWT:
             j += 1
 
         return origin_str.rstrip('\003').strip('\002')
-
-
-if __name__ == '__main__':
-    bwt = BWT()
-    before = 'abacaba'
-    after = bwt.transform(before)
-    undo_after = bwt.undo_transform(after)
-    assert before == undo_after

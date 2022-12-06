@@ -47,7 +47,7 @@ class HuffmanEncoder:
     def __init__(self):
         self.heap = MinHeap()
 
-    def bfs(self, root: Node) -> tuple:
+    def compress(self, root: Node):
         if not root:
             return
 
@@ -57,13 +57,13 @@ class HuffmanEncoder:
             curr_node = queue.pop()
             if isinstance(curr_node, Node):
                 flat_tree.append('0')
-                queue.append(curr_node.left_child)
                 queue.append(curr_node.right_child)
+                queue.append(curr_node.left_child)
             else:
                 flat_tree.append('1')
                 symbols.append(curr_node)
 
-        return (flat_tree, symbols)
+        return flat_tree, symbols
 
     def counter(self, s: str) -> dict:
         priority_dict = dict()
@@ -94,7 +94,7 @@ class HuffmanEncoder:
             s_encoded += code_dict[sym]
         return s_encoded
 
-    def encode(self, mtf: list) -> tuple:
+    def encode(self, mtf: list):
         priority_dict = self.counter(mtf)
         n = len(priority_dict)
 
@@ -112,13 +112,9 @@ class HuffmanEncoder:
             self.heap.insert((k, f_k))
 
         tree = self.heap.heap[0][0]
-
-        if isinstance(tree, str):
-            code_dict = {tree: '0'}
-        else:
-            code_dict = self.traverse(tree, prefix=list(), code_dict=dict())
+        code_dict = self.traverse(tree, prefix=list(), code_dict=dict())
 
         code_str = self.build_str(mtf, code_dict)
-        z_tree, alphabet = self.bfs(tree)
+        z_tree, alphabet = self.compress(tree)
 
-        return (''.join(z_tree), alphabet, code_str)
+        return ''.join(z_tree), alphabet, code_str
