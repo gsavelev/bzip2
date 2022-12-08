@@ -1,45 +1,47 @@
+from functools import partial
+
+
 class BWT:
-    def transform(self, s: str) -> list:
-        last_col = self.shift(s)
-        return last_col
+    def radix_sort(self, val, key, step=0):
+        if len(val) < 2:
+            for value in val:
+                yield value
+            return
 
-    def create_suffix_array(self, s: str) -> list:
-        suff_num = []
-        suff_arr = []
-        for i in range(len(s)):
-            suff_num.append((s[i:], i))
-        suff_num.sort(key=lambda x: x[0])
-        for s in suff_num:
-            num = s[1]
-            suff_arr.append(num)
-        return suff_arr
+        batches = {}
+        for value in val:
+            batches.setdefault(key(value, step), []).append(value)
 
-    def shift(self, s: str) -> list:
-        last_col = []
-        # add STX and ETX symbols to the input string
-        stx = '\002'
-        etx = '\003'
-        assert stx not in s and etx not in s
-        s = stx + s + etx
+        for k in sorted(batches.keys()):
+            for r in self.radix_sort(batches[k], key, step + 1):
+                yield r
 
-        suff_arr = self.create_suffix_array(s)
-        n = len(suff_arr)
-        for i in range(n):
-            last_char = s[(suff_arr[i] - 1 + n) % n]  # find the lact char of each rotation
-            last_col.append(last_char)
-
-        return last_col
+    def get_sym(self, text, val, step):
+        return text[(val + step) % len(text)]
 
     def mark(self, col: list, n: int) -> list:
         counter = dict()
         marked_col = []
+
         for i in range(n):
             sym = col[i]
             if sym not in counter.keys():
                 counter[sym] = 0
             counter[sym] += 1
             marked_col.append((sym, counter[sym]))
+
         return marked_col
+
+    def transform(self, text: str) -> list:
+        stx, etx = '\002', '\003'
+        assert stx not in text and etx not in text
+        text = stx + text + etx
+        bwt_list = list()
+
+        for i in self.radix_sort(range(len(text)), partial(self.get_sym, text)):
+            bwt_list.append(text[i - 1])
+
+        return bwt_list
 
     def undo_transform(self, bwt_list: list) -> str:
         origin_str = ''
