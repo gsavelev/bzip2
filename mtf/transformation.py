@@ -1,6 +1,6 @@
 class MTF:
     def __init__(self):
-        self.sym_table = [chr(i) for i in range(255)]
+        self.sym_table = [chr(i) for i in range(1024)]
 
     def transform(self, s: list) -> list:
         transformed = []
@@ -11,10 +11,10 @@ class MTF:
             del self.sym_table[s_idx + 1]  # + 1 here to compensate insert above
         return transformed
 
-    def undo_transform(self, transformed: list) -> str:
-        origin_str = ''
-        for i in transformed:
-            origin_str += self.sym_table[i]
-            self.sym_table.insert(0, self.sym_table[i])
-            del self.sym_table[i + 1]  # + 1 here to compensate insert above
-        return origin_str
+    def undo_transform(self, transformed: list) -> list:
+        origin = []
+        for i in range(len(transformed)):
+            origin.append(self.sym_table[transformed[i]])
+            self.sym_table.insert(0, self.sym_table[transformed[i]])
+            del self.sym_table[transformed[i] + 1]  # + 1 here to compensate insert above
+        return origin

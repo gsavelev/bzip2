@@ -1,3 +1,4 @@
+import sys
 from functools import partial
 
 
@@ -33,9 +34,14 @@ class BWT:
         return marked_col
 
     def transform(self, text: str) -> list:
-        stx, etx = '\002', '\003'
-        assert stx not in text and etx not in text
-        text = stx + text + etx
+        sys.setrecursionlimit(2000)
+
+        stx, etx = chr(2), chr(3)
+        if stx not in text:
+            text = stx + text
+        if etx not in text:
+            text = text + etx
+
         bwt_list = list()
 
         for i in self.radix_sort(range(len(text)), partial(self.get_sym, text)):
@@ -45,10 +51,10 @@ class BWT:
 
     def undo_transform(self, bwt_list: list) -> str:
         origin_str = ''
+        stx, etx = chr(2), chr(3)
         n = len(bwt_list)
-        bwt_str_sorted = sorted(bwt_list)  # first column of BWT matrix
 
-        first_col = self.mark(bwt_str_sorted, n)
+        first_col = self.mark(sorted(bwt_list), n)
         last_col = self.mark(bwt_list, n)
 
         j = 0
@@ -61,4 +67,4 @@ class BWT:
             k = first_col.index((sym, i))
             j += 1
 
-        return origin_str.rstrip('\003').strip('\002')
+        return origin_str.rstrip(f'{etx}').strip(f'{stx}')

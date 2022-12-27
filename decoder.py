@@ -9,7 +9,8 @@ from huffman.decoder import HuffmanDecoder
 
 def decode(buffer: bytearray) -> bytearray:
     header = re.search(b'\x01(.+?)\x02', buffer).group(1)
-    lens = [l for l in struct.iter_unpack('i', header)]
+    is_utf = header[0]
+    lens = [l for l in struct.iter_unpack('i', header[1:])]
     len_orig_tree, len_byte_tree = lens[0][0], lens[1][0]
     len_alphabet = lens[2][0]
     len_orig_code, len_byte_code = lens[3][0], lens[4][0]
@@ -34,9 +35,15 @@ def decode(buffer: bytearray) -> bytearray:
 
     mtf_list = huff.decode()
     bwt_list = mtf.undo_transform(mtf_list)
+    # FIXME problem with latin-1 files here
     decoded_data = bwt.undo_transform(bwt_list)
 
-    return decoded_data.encode('utf-8')
+    if is_utf:
+        encoding_type = 'utf-8'
+    else:
+        encoding_type = 'latin-1'
+
+    return decoded_data.encode(encoding_type)
 
 
 def main():
@@ -60,3 +67,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # with open('data/z/geo.z', 'rb') as zipfile:
+    #     decoded = decode(zipfile.read())
+    #     print(1)
+
