@@ -1,4 +1,3 @@
-import re
 import struct
 import sys
 
@@ -8,14 +7,14 @@ from huffman.decoder import HuffmanDecoder
 
 
 def decode(buffer: bytearray) -> bytearray:
-    header = re.search(b'\x01(.+?)\x02', buffer).group(1)
-    is_utf = header[0]
-    lens = [l for l in struct.iter_unpack('i', header[1:])]
+    header = buffer[:20]
+
+    lens = [l for l in struct.iter_unpack('i', header)]
     len_orig_tree, len_byte_tree = lens[0][0], lens[1][0]
     len_alphabet = lens[2][0]
     len_orig_code, len_byte_code = lens[3][0], lens[4][0]
 
-    payload = buffer.split(b'\x01' + header + b'\x02')[1]
+    payload = buffer.split(header)[1]
     tree_end = len_byte_tree
     alphabet_end = len_byte_tree + len_alphabet
     code_end = len_byte_tree + len_alphabet + len_byte_code
@@ -35,15 +34,9 @@ def decode(buffer: bytearray) -> bytearray:
 
     mtf_list = huff.decode()
     bwt_list = mtf.undo_transform(mtf_list)
-    # FIXME problem with latin-1 files here
     decoded_data = bwt.undo_transform(bwt_list)
 
-    if is_utf:
-        encoding_type = 'utf-8'
-    else:
-        encoding_type = 'latin-1'
-
-    return decoded_data.encode(encoding_type)
+    return decoded_data
 
 
 def main():
@@ -65,9 +58,8 @@ def main():
         outfile.write(decoded)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
-    # with open('data/z/geo.z', 'rb') as zipfile:
-    #     decoded = decode(zipfile.read())
+    # with open('data/z/geo.z', 'rb') as infile:
+    #     decoded = decode(infile.read())
     #     print(1)
-

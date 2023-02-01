@@ -33,25 +33,24 @@ class BWT:
 
         return marked_col
 
-    def transform(self, text: str) -> list:
+    def transform(self, text: bytes) -> list:
         sys.setrecursionlimit(2000)
 
-        stx, etx = chr(2), chr(3)
-        if stx not in text:
-            text = stx + text
-        if etx not in text:
-            text = text + etx
+        stx, etx = chr(2).encode(), chr(3).encode()
+        text = stx + text + etx
 
         bwt_list = list()
 
         for i in self.radix_sort(range(len(text)), partial(self.get_sym, text)):
-            bwt_list.append(text[i - 1])
+            # FIXME problem with different type of encoding
+            sym = chr(text[i - 1]).encode()
+            bwt_list.append(sym)
 
         return bwt_list
 
-    def undo_transform(self, bwt_list: list) -> str:
-        origin_str = ''
-        stx, etx = chr(2), chr(3)
+    def undo_transform(self, bwt_list: list) -> bytearray:
+        origin = bytearray()
+        stx, etx = chr(2).encode(), chr(3).encode()
         n = len(bwt_list)
 
         first_col = self.mark(sorted(bwt_list), n)
@@ -59,12 +58,12 @@ class BWT:
 
         j = 0
         while j < n:
-            # https://www.youtube.com/watch?v=DqdjbK68l3s
+            # https://youtu.be/DqdjbK68l3s
             if j == 0:
                 k = 0
-            (sym, i) = last_col[k][0], last_col[k][1]
-            origin_str = sym + origin_str
+            sym, i = last_col[k][0], last_col[k][1]
+            origin[0:0] = sym
             k = first_col.index((sym, i))
             j += 1
 
-        return origin_str.rstrip(f'{etx}').strip(f'{stx}')
+        return origin.rstrip(etx).strip(stx)

@@ -1,6 +1,7 @@
 class MTF:
     def __init__(self):
-        self.sym_table = [chr(i) for i in range(1024)]
+        # FIXME mb try with sym table of the exactly this file?
+        self.sym_table = [chr(i).encode() for i in range(256)]
 
     def transform(self, s: list) -> list:
         transformed = []
@@ -16,5 +17,5 @@ class MTF:
         for i in range(len(transformed)):
             origin.append(self.sym_table[transformed[i]])
             self.sym_table.insert(0, self.sym_table[transformed[i]])
-            del self.sym_table[transformed[i] + 1]  # + 1 here to compensate insert above
+            del self.sym_table[transformed[i] + 1]  # + 1 to compensate insert
         return origin

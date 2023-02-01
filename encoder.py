@@ -11,15 +11,6 @@ def encode(infile):
     mtf = MTF()
     huff = HuffmanEncoder()
 
-    # TODO treats the input file as a byte stream
-    #  and remove encoding/decoding
-    try:
-        infile = infile.decode('utf-8')
-        is_utf = True
-    except UnicodeDecodeError:
-        infile = infile.decode('latin-1')
-        is_utf = False
-
     bwt_list = bwt.transform(infile)
     mtf_list = mtf.transform(bwt_list)
     tree, alphabet, code = huff.encode(mtf_list)
@@ -28,14 +19,9 @@ def encode(infile):
     b_alphabet = struct.pack('i' * len(alphabet), *alphabet)
     b_code = bitstring_to_bytes(code)
 
-    soh, stx = chr(1).encode(), chr(2).encode()
-
     header = bytearray()
-    header.extend(soh)
-    header.extend(struct.pack('?', is_utf))
     header.extend(struct.pack('i' * 5, len(tree), len(b_tree),
                               len(b_alphabet), len(code), len(b_code)))
-    header.extend(stx)
 
     buffer = bytearray()
     buffer.extend(header)
