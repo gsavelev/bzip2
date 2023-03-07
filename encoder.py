@@ -5,13 +5,16 @@ from bwt.transformation import BWT
 from mtf.transformation import MTF
 from huffman.encoder import HuffmanEncoder
 
+from bbwt import bbwt
+
 
 def encode(infile):
-    bwt = BWT()
+    # bwt = BWT()
     mtf = MTF()
     huff = HuffmanEncoder()
 
-    bwt_list = bwt.transform(infile)
+    # bwt_list = bwt.transform(infile)
+    bwt_list = bbwt.bijective_bwt(infile)
     mtf_list = mtf.transform(bwt_list)
     tree, alphabet, code = huff.encode(mtf_list)
 
@@ -57,6 +60,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # with open('data/geo', 'rb') as infile:
+    # with open('data/geo1', 'rb') as infile:
     #     encoded = encode(infile.read())
     #     print(1)

@@ -3,15 +3,15 @@ from functools import partial
 
 
 class BWT:
-    def radix_sort(self, val, key, step=0):
-        if len(val) < 2:
-            for value in val:
-                yield value
+    def radix_sort(self, vals, key, step=0):
+        if len(vals) < 2:
+            for val in vals:
+                yield val
             return
 
         batches = {}
-        for value in val:
-            batches.setdefault(key(value, step), []).append(value)
+        for val in vals:
+            batches.setdefault(key(val, step), []).append(val)
 
         for k in sorted(batches.keys()):
             for r in self.radix_sort(batches[k], key, step + 1):
@@ -34,15 +34,17 @@ class BWT:
         return marked_col
 
     def transform(self, text: bytes) -> list:
-        sys.setrecursionlimit(2000)
+        sys.setrecursionlimit(20000)
 
-        stx, etx = chr(2).encode(), chr(3).encode()
-        text = stx + text + etx
-
+        # TODO mb better to use two symbols like there?
+        #  https://github.com/fepe55/burrows-wheeler/blob/master/burrowswheeler/__init__.py
+        eof = chr(3).encode()
+        text += eof
         bwt_list = list()
 
+        # FIXME some symbols contains several bytes, so catch it together
+        #  to do it iterate whole symbol in bytes
         for i in self.radix_sort(range(len(text)), partial(self.get_sym, text)):
-            # FIXME problem with different type of encoding
             sym = chr(text[i - 1]).encode()
             bwt_list.append(sym)
 
@@ -50,12 +52,13 @@ class BWT:
 
     def undo_transform(self, bwt_list: list) -> bytearray:
         origin = bytearray()
-        stx, etx = chr(2).encode(), chr(3).encode()
-        n = len(bwt_list)
+        n, eof = len(bwt_list), chr(3).encode()
 
         first_col = self.mark(sorted(bwt_list), n)
         last_col = self.mark(bwt_list, n)
 
+        # FIXME why all NULL-bytes placed first after restore origin?
+        #  how to properly check if stx and etx on their places?
         j = 0
         while j < n:
             # https://youtu.be/DqdjbK68l3s
@@ -66,4 +69,4 @@ class BWT:
             k = first_col.index((sym, i))
             j += 1
 
-        return origin.rstrip(etx).strip(stx)
+        return origin.strip(eof)

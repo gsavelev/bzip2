@@ -5,6 +5,8 @@ from bwt.transformation import BWT
 from mtf.transformation import MTF
 from huffman.decoder import HuffmanDecoder
 
+from bbwt import bbwt
+
 
 def decode(buffer: bytearray) -> bytearray:
     header = buffer[:20]
@@ -34,7 +36,8 @@ def decode(buffer: bytearray) -> bytearray:
 
     mtf_list = huff.decode()
     bwt_list = mtf.undo_transform(mtf_list)
-    decoded_data = bwt.undo_transform(bwt_list)
+    # decoded_data = bwt.undo_transform(bwt_list)
+    decoded_data = bbwt.bijective_bwt_inv(bwt_list)
 
     return decoded_data
 
@@ -60,6 +63,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # with open('data/z/geo.z', 'rb') as infile:
+    # with open('data/z/geo1.z', 'rb') as infile:
     #     decoded = decode(infile.read())
     #     print(1)
