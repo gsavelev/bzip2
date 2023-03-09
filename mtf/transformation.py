@@ -1,11 +1,11 @@
 class MTF:
     def __init__(self):
-        self.sym_table = [chr(i) for i in range(256)]
+        self.sym_table = [chr(i).encode() for i in range(256)]
 
     def transform(self, s: list) -> list:
         transformed = []
         for i in range(len(s)):
-            s_idx = self.sym_table.index(chr(s[i]))
+            s_idx = self.sym_table.index(s[i])
             transformed.append(s_idx)
             self.sym_table.insert(0, self.sym_table[s_idx])
             del self.sym_table[s_idx + 1]  # + 1 here to compensate insert above

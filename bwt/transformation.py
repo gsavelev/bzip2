@@ -35,15 +35,11 @@ class BWT:
 
     def transform(self, text: bytes) -> list:
         sys.setrecursionlimit(20000)
-
-        # TODO mb better to use two symbols like there?
-        #  https://github.com/fepe55/burrows-wheeler/blob/master/burrowswheeler/__init__.py
-        eof = chr(3).encode()
-        text += eof
         bwt_list = list()
 
-        # FIXME some symbols contains several bytes, so catch it together
-        #  to do it iterate whole symbol in bytes
+        eof = chr(3).encode()
+        text += eof
+
         for i in self.radix_sort(range(len(text)), partial(self.get_sym, text)):
             sym = chr(text[i - 1]).encode()
             bwt_list.append(sym)
@@ -57,8 +53,6 @@ class BWT:
         first_col = self.mark(sorted(bwt_list), n)
         last_col = self.mark(bwt_list, n)
 
-        # FIXME why all NULL-bytes placed first after restore origin?
-        #  how to properly check if stx and etx on their places?
         j = 0
         while j < n:
             # https://youtu.be/DqdjbK68l3s
