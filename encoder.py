@@ -11,7 +11,7 @@ def encode(infile):
     mtf = MTF()
     huff = HuffmanEncoder()
 
-    bwt_list = bwt.transform(infile)
+    bwt_list, last_idx, eof = bwt.transform(infile)
     mtf_list = mtf.transform(bwt_list)
     tree, alphabet, code = huff.encode(mtf_list)
 
@@ -20,8 +20,8 @@ def encode(infile):
     b_code = bitstring_to_bytes(code)
 
     header = bytearray()
-    header.extend(struct.pack('i' * 5, len(tree), len(b_tree),
-                              len(b_alphabet), len(code), len(b_code)))
+    header.extend(struct.pack('i' * 7, len(tree), len(b_tree), len(b_alphabet),
+                              len(code), len(b_code), last_idx, eof))
 
     buffer = bytearray()
     buffer.extend(header)

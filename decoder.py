@@ -7,12 +7,13 @@ from huffman.decoder import HuffmanDecoder
 
 
 def decode(buffer: bytearray) -> bytearray:
-    header = buffer[:20]
+    header = buffer[:28]
 
     lens = [l for l in struct.iter_unpack('i', header)]
     len_orig_tree, len_byte_tree = lens[0][0], lens[1][0]
     len_alphabet = lens[2][0]
     len_orig_code, len_byte_code = lens[3][0], lens[4][0]
+    last_idx, eof = lens[5][0], lens[6][0]
 
     payload = buffer.split(header)[1]
     tree_end = len_byte_tree
@@ -34,7 +35,7 @@ def decode(buffer: bytearray) -> bytearray:
 
     mtf_list = huff.decode()
     bwt_list = mtf.undo_transform(mtf_list)
-    decoded_data = bwt.undo_transform(bwt_list)
+    decoded_data = bwt.undo_transform(bwt_list, last_idx, eof)
 
     return decoded_data
 

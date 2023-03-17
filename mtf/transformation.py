@@ -1,6 +1,6 @@
 class MTF:
     def __init__(self):
-        self.sym_table = [chr(i).encode() for i in range(256)]
+        self.sym_table = [chr(i).encode(encoding='latin-1') for i in range(256)]
 
     def transform(self, s: list) -> list:
         transformed = []

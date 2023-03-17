@@ -1,3 +1,4 @@
+import resource
 import sys
 from functools import partial
 
@@ -34,33 +35,39 @@ class BWT:
         return marked_col
 
     def transform(self, text: bytes) -> list:
-        sys.setrecursionlimit(20000)
-        bwt_list = list()
+        sys.setrecursionlimit(10**6)
 
-        eof = chr(3).encode()
-        text += eof
+        bwt_list, last_idx, eof = list(), None, text[-1]
 
         for i in self.radix_sort(range(len(text)), partial(self.get_sym, text)):
-            sym = chr(text[i - 1]).encode()
+            sym = chr(text[i - 1]).encode(encoding='latin-1')
+            if i == len(text) - 1:
+                last_idx = len(bwt_list)
             bwt_list.append(sym)
 
-        return bwt_list
+        return bwt_list, last_idx, eof
 
-    def undo_transform(self, bwt_list: list) -> bytearray:
+    def undo_transform(
+            self, bwt_list: list, last_idx: int, eof: int) -> bytearray:
         origin = bytearray()
-        n, eof = len(bwt_list), chr(3).encode()
+        n = len(bwt_list)
 
         first_col = self.mark(sorted(bwt_list), n)
         last_col = self.mark(bwt_list, n)
 
         j = 0
-        while j < n:
+        while j < n - 1:
             # https://youtu.be/DqdjbK68l3s
             if j == 0:
-                k = 0
+                if last_idx:
+                    k = last_idx
+                else:
+                    raise ValueError('Last origin symbol index not found!')
             sym, i = last_col[k][0], last_col[k][1]
             origin[0:0] = sym
             k = first_col.index((sym, i))
             j += 1
 
-        return origin.strip(eof)
+        origin.append(eof)
+
+        return origin
