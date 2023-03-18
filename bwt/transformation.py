@@ -1,4 +1,3 @@
-import resource
 import sys
 from functools import partial
 
